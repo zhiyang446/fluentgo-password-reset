@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FluentGo 密码重置跳转中…</title>
+    <style>
+      body { font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif; margin: 0; padding: 24px; background: #f7f7fb; color: #222; }
+      .card { max-width: 680px; margin: 10vh auto; padding: 24px 20px; border-radius: 14px; background: #fff; box-shadow: 0 8px 28px rgba(0,0,0,.08); }
+      h1 { font-size: 20px; margin: 0 0 12px; }
+      p { margin: 8px 0; line-height: 1.6; color: #555; }
+      a.btn { display: inline-block; margin-top: 12px; padding: 10px 16px; border-radius: 10px; background: #5561ff; color: #fff; text-decoration: none; }
+      code { background: #f2f3ff; padding: 2px 6px; border-radius: 6px; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>正在跳转到 FluentGo 应用…</h1>
+      <p>请稍候。如果没有自动打开应用，请点击下面的按钮。</p>
+      <a id="openApp" class="btn" href="#">打开 FluentGo</a>
+      <p id="tips" style="display:none">如果仍无法跳转，请重新从应用中发送“忘记密码”邮件并使用最新邮件中的链接。</p>
+    </div>
+
+    <script>
+      // 解析 Supabase 在 URL hash(#) 中携带的参数
+      const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
+      const access = hash.get('access_token') || '';
+      const refresh = hash.get('refresh_token') || '';
+      const type = hash.get('type') || 'recovery';
+
+      // 组装 App Link，把 token 放到查询参数里传给 App
+      const appLink = `fluentgo://auth/password-reset?access_token=${encodeURIComponent(access)}&refresh_token=${encodeURIComponent(refresh)}&type=${encodeURIComponent(type)}`;
+
+      // 设置兜底超时与手动按钮
+      const btn = document.getElementById('openApp');
+      btn.href = appLink;
+
+      // 自动跳转到 App
+      setTimeout(() => { location.href = appLink; }, 50);
+      setTimeout(() => { document.getElementById('tips').style.display = 'block'; }, 3000);
+    </script>
+  </body>
+  </html>
+
+
