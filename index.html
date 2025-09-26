@@ -24,12 +24,19 @@
     <script>
       // 解析 Supabase 在 URL hash(#) 中携带的参数
       const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
+      const search = new URLSearchParams(location.search.replace(/^\?/, ''));
+      // 两种返回形态：
+      // 1) hash 中带 access_token / refresh_token / type
+      // 2) query 中带 code（PKCE） 和 type
       const access = hash.get('access_token') || '';
       const refresh = hash.get('refresh_token') || '';
-      const type = hash.get('type') || 'recovery';
+      const code = search.get('code') || hash.get('code') || '';
+      const type = hash.get('type') || search.get('type') || 'recovery';
 
-      // 组装 App Link，把 token 放到查询参数里传给 App
-      const appLink = `fluentgo://auth/password-reset?access_token=${encodeURIComponent(access)}&refresh_token=${encodeURIComponent(refresh)}&type=${encodeURIComponent(type)}`;
+      let appLink = 'fluentgo://auth/password-reset?type=' + encodeURIComponent(type);
+      if (code) appLink += `&code=${encodeURIComponent(code)}`;
+      if (access) appLink += `&access_token=${encodeURIComponent(access)}`;
+      if (refresh) appLink += `&refresh_token=${encodeURIComponent(refresh)}`;
 
       // 设置兜底超时与手动按钮
       const btn = document.getElementById('openApp');
